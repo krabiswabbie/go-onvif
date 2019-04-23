@@ -11,8 +11,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/clbanning/mxj"
-	"github.com/satori/go.uuid"
+	"github.com/deepch/mxj"
+	"github.com/deepch/go.uuid"
 )
 
 var httpClient = &http.Client{Timeout: time.Second * 4}

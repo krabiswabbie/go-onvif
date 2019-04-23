@@ -1,6 +1,7 @@
 package onvif
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -231,4 +232,108 @@ func (device Device) GetHostname() (HostnameInformation, error) {
 	}
 
 	return hostnameInfo, nil
+}
+
+// AppPTZMove move
+func AppPTZMove(action string) {
+	ip := "171.25.232.42"
+	port := "11999"
+	login := "admin"
+	password := "Ghjlern14"
+
+	var testDevice = Device{
+		User:     login,
+		Password: password,
+		XAddr:    "http://" + login + ":" + password + "@" + ip + ":" + port + "/onvif/device_service",
+		// XAddr: "http://" + login + ":" + password + "@" + ip + ":" + port + "/onvif/media_service",
+	}
+	res, err := testDevice.GetProfiles()
+	if err != nil && err.Error() == "Unknown Action" {
+		testDevice.XAddr = "http://" + login + ":" + password + "@" + ip + ":" + port + "/onvif/media_service"
+		res, err = testDevice.GetProfiles()
+		if err == nil {
+			testDevice.XAddr = "http://" + login + ":" + password + "@" + ip + ":" + port + "/onvif/ptz_service"
+		}
+	}
+	if err == nil && len(res) > 0 {
+		switch action {
+		case "up":
+			err := testDevice.Ptz(res[0].Token, "0.0", "0.1", "0.0")
+			if err != nil {
+				err = testDevice.Ptz(res[0].PTZConfig.Token, "0.0", "0.1", "0.0")
+				if err != nil {
+					fmt.Println(err)
+					// WriteFormatGIN(0, 200, err.Error(), c)
+					return
+				}
+			}
+		case "down":
+			err := testDevice.Ptz(res[0].Token, "0.0", "-0.1", "0.0")
+			if err != nil {
+				err = testDevice.Ptz(res[0].PTZConfig.Token, "0.0", "-0.1", "0.0")
+				if err != nil {
+					fmt.Println(err)
+					// WriteFormatGIN(0, 200, err.Error(), c)
+					return
+				}
+			}
+		case "left":
+			err := testDevice.Ptz(res[0].Token, "-0.1", "0.0", "0.0")
+			if err != nil {
+				err = testDevice.Ptz(res[0].PTZConfig.Token, "-0.1", "0.0", "0.0")
+				if err != nil {
+					fmt.Println(err)
+					// WriteFormatGIN(0, 200, err.Error(), c)
+					return
+				}
+			}
+		case "right":
+			err := testDevice.Ptz(res[0].Token, "0.1", "0.0", "0.0")
+			if err != nil {
+				err = testDevice.Ptz(res[0].PTZConfig.Token, "0.1", "0.0", "0.0")
+				if err != nil {
+					fmt.Println(err)
+					// WriteFormatGIN(0, 200, err.Error(), c)
+					return
+				}
+			}
+		case "zoomin":
+			err := testDevice.Ptz(res[0].Token, "0.0", "0.0", "0.1")
+			if err != nil {
+				err = testDevice.Ptz(res[0].PTZConfig.Token, "0.0", "0.0", "0.1")
+				if err != nil {
+					fmt.Println(err)
+					// WriteFormatGIN(0, 200, err.Error(), c)
+					return
+				}
+			}
+		case "zoomout":
+			err := testDevice.Ptz(res[0].Token, "0.0", "0.0", "-0.1")
+			if err != nil {
+				err = testDevice.Ptz(res[0].PTZConfig.Token, "0.0", "0.0", "-0.1")
+				if err != nil {
+					fmt.Println(err)
+					// WriteFormatGIN(0, 200, err.Error(), c)
+					return
+				}
+			}
+		case "stop":
+			testDevice.Ptz(res[0].Token, "0", "0", "0")
+			err := testDevice.PtzStop(res[0].Token, "0", "0", "0")
+			if err != nil {
+				testDevice.Ptz(res[0].PTZConfig.Token, "0", "0", "0")
+				err = testDevice.PtzStop(res[0].PTZConfig.Token, "0", "0", "0")
+				if err != nil {
+					fmt.Println(err)
+					// WriteFormatGIN(0, 200, err.Error(), c)
+					return
+				}
+			}
+		}
+		fmt.Println("SUCCESS")
+		// WriteFormatGIN(1, 200, "success", c)
+	} else {
+		fmt.Println(err)
+		// WriteFormatGIN(0, 200, err.Error(), c)
+	}
 }

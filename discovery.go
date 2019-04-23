@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/clbanning/mxj"
-	"github.com/satori/go.uuid"
+	uuid "github.com/deepch/go.uuid"
+	"github.com/deepch/mxj"
 )
 
 var errWrongDiscoveryResponse = errors.New("Response is not related to discovery request")

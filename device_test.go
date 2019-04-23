@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"testing"
+	"time"
 )
 
 func TestGetInformation(t *testing.T) {
@@ -63,4 +64,10 @@ func TestGetHostname(t *testing.T) {
 
 	js := prettyJSON(&res)
 	fmt.Println(js)
+}
+
+func TestContinuousMove(t *testing.T) {
+	AppPTZMove("up")
+	time.Sleep(3 * time.Second)
+	AppPTZMove("stop")
 }
